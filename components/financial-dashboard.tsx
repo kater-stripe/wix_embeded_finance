@@ -1,11 +1,96 @@
 import type React from "react"
+import { useEffect, useState } from "react"
 import { ArrowUpRight, Building2 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { loadConnectAndInitialize } from '@stripe/connect-js/pure'
+import {
+  ConnectComponentsProvider,
+  ConnectCapitalFinancingPromotion,
+} from '@stripe/react-connect-js'
 
 export function FinancialDashboard() {
+  const [stripeConnectInstance, setStripeConnectInstance] = useState<any>(null)
+  const [isLoadingStripe, setIsLoadingStripe] = useState(true)
+
+  const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  const capitalAccountId = process.env.NEXT_PUBLIC_STRIPE_CAPITAL_ACCOUNT_ID
+
+  useEffect(() => {
+    if (!stripePublishableKey || !capitalAccountId) {
+      setIsLoadingStripe(false)
+      return
+    }
+
+    const initializeStripe = async () => {
+      try {
+        const capitalAccountSessionResponse = await fetch('/api/stripe/create-capital-account-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            account: capitalAccountId,
+          }),
+        })
+
+        if (!capitalAccountSessionResponse.ok) {
+          console.error('Failed to create capital account session')
+          setIsLoadingStripe(false)
+          return
+        }
+
+        const { client_secret } = await capitalAccountSessionResponse.json()
+
+        const capitalConnectInstance = loadConnectAndInitialize({
+          publishableKey: stripePublishableKey,
+          fetchClientSecret: async () => client_secret,
+          appearance: {
+            theme: 'stripe',
+            variables: {
+              fontFamily: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+              fontSizeBase: '14px',
+              fontWeightNormal: '400',
+              fontWeightMedium: '500',
+              fontWeightBold: '600',
+              spacingUnit: '8px',
+              borderRadius: '8px',
+            },
+          },
+        })
+
+        setStripeConnectInstance(capitalConnectInstance)
+        setIsLoadingStripe(false)
+      } catch (err) {
+        console.error('Error initializing Stripe:', err)
+        setIsLoadingStripe(false)
+      }
+    }
+
+    initializeStripe()
+  }, [stripePublishableKey, capitalAccountId])
+
   return (
     <aside className="w-[420px] border-l bg-muted/30 p-6 overflow-auto">
+      {stripeConnectInstance && !isLoadingStripe && (
+        <div className="mb-6 overflow-hidden rounded-lg border bg-card min-h-[180px]">
+          <ConnectComponentsProvider connectInstance={stripeConnectInstance}>
+            <div className="max-w-full overflow-hidden p-6">
+              <ConnectCapitalFinancingPromotion layout="banner" />
+            </div>
+          </ConnectComponentsProvider>
+        </div>
+      )}
+
+      {isLoadingStripe && stripePublishableKey && capitalAccountId && (
+        <Card className="mb-6 p-4">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+            <span className="ml-3 text-sm text-muted-foreground">Loading Capital offers...</span>
+          </div>
+        </Card>
+      )}
+
       <Card className="mb-6 p-6">
         <div className="mb-4 flex items-baseline justify-between">
           <div>
