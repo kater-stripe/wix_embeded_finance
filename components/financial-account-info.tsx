@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { EmbeddedFinancialAccount } from "@/components/embedded-financial-account"
-import { AddMoney } from "@/components/add-money"
+import { AddMoneyPanel } from "@/components/add-money-panel"
 
 interface FinancialAccountInfoProps {
   accountHolderName?: string
@@ -26,32 +26,27 @@ export function FinancialAccountInfo({
   onMoneyAdded
 }: FinancialAccountInfoProps) {
   return (
-    <div className="flex flex-col lg:flex-row gap-6 lg:items-stretch">
-      <div className="flex-1">
-        <Card className="h-full">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Account information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Embedded Financial Account Component */}
-            {connectedAccountId && financialAccountId && (
-              <EmbeddedFinancialAccount
-                connectedAccountId={connectedAccountId}
-                financialAccountId={financialAccountId}
-              />
-            )}
-          </CardContent>
-        </Card>
+    <div className="space-y-6">
+      {/* Header with Add Money button */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Account information</h1>
+        {financialAccountId && (
+          <AddMoneyPanel onSuccess={onMoneyAdded} />
+        )}
       </div>
       
-      {/* Add Money Component */}
-      {financialAccountId && (
-        <div className="lg:w-80 flex flex-col">
-          <AddMoney
-            onSuccess={onMoneyAdded}
-          />
-        </div>
-      )}
+      {/* Account Information Card */}
+      <Card>
+        <CardContent className="pt-6">
+          {/* Embedded Financial Account Component */}
+          {connectedAccountId && financialAccountId && (
+            <EmbeddedFinancialAccount
+              connectedAccountId={connectedAccountId}
+              financialAccountId={financialAccountId}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }
