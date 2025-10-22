@@ -27,9 +27,16 @@ export function FinancialAccountInfo({
 }: FinancialAccountInfoProps) {
   return (
     <div className="space-y-6">
+      {/* Breadcrumb */}
+      <div className="mb-2">
+        <div className="text-sm text-gray-600">
+          Wix Finances <span className="mx-1">›</span> Financial Account
+        </div>
+      </div>
+
       {/* Header with Add Money button */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Account information</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Account information</h1>
         {financialAccountId && (
           <AddMoneyPanel onSuccess={onMoneyAdded} />
         )}
@@ -37,7 +44,7 @@ export function FinancialAccountInfo({
       
       {/* Account Information Card */}
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="px-6 py-4">
           {/* Embedded Financial Account Component */}
           {connectedAccountId && financialAccountId && (
             <EmbeddedFinancialAccount
