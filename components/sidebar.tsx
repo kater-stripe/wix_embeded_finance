@@ -4,10 +4,13 @@ import { Badge } from "@/components/ui/badge"
 
 interface SidebarProps {
   onNavigateToCapital?: () => void
+  onNavigateToChecking?: () => void
+  onNavigateToFinancialAccount?: () => void
+  onNavigateToCards?: () => void
   currentView?: string
 }
 
-export function Sidebar({ onNavigateToCapital, currentView }: SidebarProps) {
+export function Sidebar({ onNavigateToCapital, onNavigateToChecking, onNavigateToFinancialAccount, onNavigateToCards, currentView }: SidebarProps) {
   return (
     <aside className="w-[260px] border-r bg-[#1F2937] text-white">
       <nav className="flex h-full flex-col p-4">
@@ -54,6 +57,7 @@ export function Sidebar({ onNavigateToCapital, currentView }: SidebarProps) {
               </Button>
               <Button
                 variant="ghost"
+                onClick={onNavigateToChecking}
                 className={`w-full justify-start text-sm ${
                   currentView === 'checking'
                     ? 'bg-white/10 text-white hover:bg-white/15'
@@ -73,6 +77,28 @@ export function Sidebar({ onNavigateToCapital, currentView }: SidebarProps) {
                 }`}
               >
                 Capital
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={onNavigateToFinancialAccount}
+                className={`w-full justify-start text-sm ${
+                  currentView === 'financial-account'
+                    ? 'bg-white/10 text-white hover:bg-white/15'
+                    : 'text-white/85 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                Financial Account
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={onNavigateToCards}
+                className={`w-full justify-start text-sm ${
+                  currentView === 'cards'
+                    ? 'bg-white/10 text-white hover:bg-white/15'
+                    : 'text-white/85 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                Cards
               </Button>
               <Button
                 variant="ghost"
